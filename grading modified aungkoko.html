@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Assignment Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        input[type="number"] {
+            width: 200px;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        input[type="number"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+            transform: scale(1.02);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            padding: 12px 25px;
+            font-size: 1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.6);
+        }
+
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
+        .validation-error {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid #dc3545;
+            display: none;
+        }
+
+        .validation-error.show {
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 20%, 40%, 60%, 80% {
+                transform: translateX(-5px);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(5px);
+            }
+        }
+
+        .input-valid {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.3) !important;
+        }
+
+        .input-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.3) !important;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            font-weight: 700;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .grade-a {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .grade-b {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .grade-c {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .grade-d {
+            background: linear-gradient(135deg, #FF5722, #D84315);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+        }
+
+        .grade-f {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .grade-scale {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .grade-scale h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .grade-scale ul {
+            list-style: none;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .grade-scale li {
+            margin: 8px 0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .grade-scale li:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .error {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            input[type="number"] {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .submit-btn {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Grade Assignment</h1>
+        
+        <div class="input-section">
+            <label for="score">Enter the Score:</label>
+            <input type="number" id="score" min="0" max="100" placeholder="0-100">
+            <button class="submit-btn" onclick="calculateGrade()">Submit</button>
+            <div id="validation-error" class="validation-error"></div>
+        </div>
+        
+        <div id="result" class="result"></div>
+        
+        <button id="back-btn" class="back-btn" onclick="resetForm()" style="display: none;">Back</button>
+        
+        <div class="grade-scale">
+            <h3>Grading Scale</h3>
+            <ul>
+                <li>90-100: A</li>
+                <li>80-89: B</li>
+                <li>70-79: C</li>
+                <li>60-69: D</li>
+                <li>Below 60: F</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function validateInput(score) {
+            const scoreInput = document.getElementById('score');
+            const validationError = document.getElementById('validation-error');
+            
+            // Clear previous validation states
+            scoreInput.classList.remove('input-valid', 'input-invalid');
+            validationError.classList.remove('show');
+            
+            let errors = [];
+            
+            // Check if input is empty
+            if (scoreInput.value.trim() === '') {
+                errors.push('Score cannot be empty');
+            }
+            // Check if input is not a number
+            else if (isNaN(score)) {
+                errors.push('Please enter a valid number');
+            }
+            // Check if score is negative
+            else if (score < 0) {
+                errors.push('Score cannot be negative');
+            }
+            // Check if score exceeds 100
+            else if (score > 100) {
+                errors.push('Score cannot exceed 100');
+            }
+            // Check for decimal values
+            else if (score !== parseInt(score)) {
+                errors.push('Please enter a whole number');
+            }
+            
+            if (errors.length > 0) {
+                scoreInput.classList.add('input-invalid');
+                validationError.textContent = errors.join('. ');
+                validationError.classList.add('show');
+                return false;
+            } else {
+                scoreInput.classList.add('input-valid');
+                return true;
+            }
+        }
+
+        function calculateGrade() {
+            const scoreInput = document.getElementById('score');
+            const resultDiv = document.getElementById('result');
+            const backBtn = document.getElementById('back-btn');
+            const score = parseFloat(scoreInput.value);
+            
+            resultDiv.className = 'result';
+            
+            // Validate input 
+            if (!validateInput(score)) {
+                return;
+            }
+            
+            let grade;
+            let gradeClass;
+            
+            // Determine grade based on score
+            if (score >= 90) {
+                grade = 'A';
+                gradeClass = 'grade-a';
+            } else if (score >= 80) {
+                grade = 'B';
+                gradeClass = 'grade-b';
+            } else if (score >= 70) {
+                grade = 'C';
+                gradeClass = 'grade-c';
+            } else if (score >= 60) {
+                grade = 'D';
+                gradeClass = 'grade-d';
+            } else {
+                grade = 'F';
+                gradeClass = 'grade-f';
+            }
+            
+            // Display result
+            resultDiv.textContent = `You got "${grade}" grade.`;
+            resultDiv.classList.add(gradeClass, 'show');
+            
+            // Show back button
+            backBtn.style.display = 'inline-block';
+            
+            // Hide the submit button and input temporarily
+            document.querySelector('.input-section').style.opacity = '0.5';
+            document.querySelector('.submit-btn').disabled = true;
+            scoreInput.disabled = true;
+        }
+        
+        function resetForm() {
+            const scoreInput = document.getElementById('score');
+            const resultDiv = document.getElementById('result');
+            const backBtn = document.getElementById('back-btn');
+            const validationError = document.getElementById('validation-error');
+            const inputSection = document.querySelector('.input-section');
+            const submitBtn = document.querySelector('.submit-btn');
+            
+            // Clear input and result
+            scoreInput.value = '';
+            resultDiv.className = 'result';
+            resultDiv.textContent = '';
+            
+            // Hide back button
+            backBtn.style.display = 'none';
+            
+            // Clear validation states
+            scoreInput.classList.remove('input-valid', 'input-invalid');
+            validationError.classList.remove('show');
+            
+            // Re-enable input section
+            inputSection.style.opacity = '1';
+            submitBtn.disabled = false;
+            scoreInput.disabled = false;
+            
+            // Focus back on input
+            scoreInput.focus();
+        }
+        
+        // Real-time validation as user types
+        document.getElementById('score').addEventListener('input', function() {
+            const resultDiv = document.getElementById('result');
+            const validationError = document.getElementById('validation-error');
+            
+            // Clear result when typing
+            resultDiv.classList.remove('show');
+            
+            // Clear previous validation error when user starts typing again
+            validationError.classList.remove('show');
+            this.classList.remove('input-valid', 'input-invalid');
+        });
+        
+        // Allow Enter key to submit
+        document.getElementById('score').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateGrade();
+            }
+        });
+        
+        // Prevent negative values and limit to 3 digits
+        document.getElementById('score').addEventListener('keydown', function(event) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (event.keyCode === 65 && event.ctrlKey === true) ||
+                (event.keyCode === 67 && event.ctrlKey === true) ||
+                (event.keyCode === 86 && event.ctrlKey === true) ||
+                (event.keyCode === 88 && event.ctrlKey === true)) {
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+                event.preventDefault();
+            }
+            // Limit to 3 digits
+            if (this.value.length >= 3 && [46, 8].indexOf(event.keyCode) === -1) {
+                event.preventDefault();
+            }
+        });
+        
+        // Focus on input when page loads
+        window.addEventListener('load', function() {
+            document.getElementById('score').focus();
+        });
+    </script>
+</body>
+</html>

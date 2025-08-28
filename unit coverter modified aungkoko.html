@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .converter-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        .converter-section h2 {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        input[type="number"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 150px;
+        }
+        
+        select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        .selection-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            margin: 10px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            width: 90%;
+            max-width: 300px;
+            margin: 15px auto;
+        }
+        
+        .selection-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .converter-selection {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .back-btn {
+            background: #9e9e9e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #757575;
+        }
+        
+        input[type="number"]:invalid {
+            border-color: #f44336;
+            background-color: #ffebee;
+        }
+        
+        input[type="number"]:valid {
+            border-color: #4CAF50;
+        }
+        
+        .validation-message {
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .validation-success {
+            color: #4CAF50;
+            background: #e8f5e8;
+            border: 1px solid #c8e6c8;
+        }
+        
+        .validation-error {
+            color: #f44336;
+            background: #ffebee;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f5e8;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .clear-btn {
+            background: #f44336;
+            margin-left: 10px;
+        }
+        
+        .clear-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="mainView">
+            <h1>🔧 Universal Unit Converter</h1>
+            <div class="converter-selection">
+                <button class="selection-btn" onclick="showConverter('length')">📏 Length Converter</button>
+                <button class="selection-btn" onclick="showConverter('height')">📐 Height Converter</button>
+                <button class="selection-btn" onclick="showConverter('temperature')">🌡️ Temperature Converter</button>
+                <button class="selection-btn" onclick="showConverter('area')">📐 Area Converter</button>
+            </div>
+        </div>
+        
+        
+        <!-- Length Converter -->
+        <div id="lengthConverter" class="converter-section" style="display: none;">
+            <button class="back-btn" onclick="goBack()">← Back to Menu</button>
+            <h2>📏 Length Converter</h2>
+            <div class="input-group">
+                <input type="number" id="lengthInput" placeholder="Enter value" step="any" min="0" onblur="validateInput('lengthInput', 'lengthValidation')">
+                <div id="lengthValidation" class="validation-message"></div>
+                <select id="lengthFrom">
+                    <option value="meter">Meters</option>
+                    <option value="kilometer">Kilometers</option>
+                    <option value="centimeter">Centimeters</option>
+                    <option value="millimeter">Millimeters</option>
+                    <option value="inch">Inches</option>
+                    <option value="foot">Feet</option>
+                    <option value="yard">Yards</option>
+                    <option value="mile">Miles</option>
+                </select>
+                <span>to</span>
+                <select id="lengthTo">
+                    <option value="meter">Meters</option>
+                    <option value="kilometer">Kilometers</option>
+                    <option value="centimeter">Centimeters</option>
+                    <option value="millimeter">Millimeters</option>
+                    <option value="inch">Inches</option>
+                    <option value="foot">Feet</option>
+                    <option value="yard">Yards</option>
+                    <option value="mile">Miles</option>
+                </select>
+                <button onclick="convertLength()">Convert</button>
+                <button class="clear-btn" onclick="clearLength()">Clear</button>
+            </div>
+            <div id="lengthError" class="error-message"></div>
+            <div id="lengthResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- Height Converter -->
+        <div id="heightConverter" class="converter-section" style="display: none;">
+            <button class="back-btn" onclick="goBack()">← Back to Menu</button>
+            <h2>📐 Height Converter</h2>
+            <div class="input-group">
+                <input type="number" id="heightInput" placeholder="Enter value" step="any" min="0" onblur="validateInput('heightInput', 'heightValidation')">
+                <div id="heightValidation" class="validation-message"></div>
+                <select id="heightFrom">
+                    <option value="meter">Meters</option>
+                    <option value="centimeter">Centimeters</option>
+                    <option value="foot">Feet</option>
+                    <option value="inch">Inches</option>
+                    <option value="feet-inches">Feet & Inches</option>
+                </select>
+                <span>to</span>
+                <select id="heightTo">
+                    <option value="meter">Meters</option>
+                    <option value="centimeter">Centimeters</option>
+                    <option value="foot">Feet</option>
+                    <option value="inch">Inches</option>
+                    <option value="feet-inches">Feet & Inches</option>
+                </select>
+                <button onclick="convertHeight()">Convert</button>
+                <button class="clear-btn" onclick="clearHeight()">Clear</button>
+            </div>
+            <div id="heightError" class="error-message"></div>
+            <div id="heightResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- Temperature Converter -->
+        <div id="temperatureConverter" class="converter-section" style="display: none;">
+            <button class="back-btn" onclick="goBack()">← Back to Menu</button>
+            <h2>🌡️ Temperature Converter</h2>
+            <div class="input-group">
+                <input type="number" id="tempInput" placeholder="Enter value" step="any" onblur="validateTemperature('tempInput', 'tempValidation')">
+                <div id="tempValidation" class="validation-message"></div>
+                <select id="tempFrom">
+                    <option value="celsius">Celsius (°C)</option>
+                    <option value="fahrenheit">Fahrenheit (°F)</option>
+                    <option value="kelvin">Kelvin (K)</option>
+                </select>
+                <span>to</span>
+                <select id="tempTo">
+                    <option value="celsius">Celsius (°C)</option>
+                    <option value="fahrenheit">Fahrenheit (°F)</option>
+                    <option value="kelvin">Kelvin (K)</option>
+                </select>
+                <button onclick="convertTemperature()">Convert</button>
+                <button class="clear-btn" onclick="clearTemperature()">Clear</button>
+            </div>
+            <div id="tempError" class="error-message"></div>
+            <div id="tempResult" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- Area Converter -->
+        <div id="areaConverter" class="converter-section" style="display: none;">
+            <button class="back-btn" onclick="goBack()">← Back to Menu</button>
+            <h2>📐 Area Converter</h2>
+            <div class="input-group">
+                <input type="number" id="areaInput" placeholder="Enter value" step="any" min="0" onblur="validateInput('areaInput', 'areaValidation')">
+                <div id="areaValidation" class="validation-message"></div>
+                <select id="areaFrom">
+                    <option value="square-meter">Square Meters</option>
+                    <option value="square-kilometer">Square Kilometers</option>
+                    <option value="square-centimeter">Square Centimeters</option>
+                    <option value="square-foot">Square Feet</option>
+                    <option value="square-inch">Square Inches</option>
+                    <option value="square-yard">Square Yards</option>
+                    <option value="acre">Acres</option>
+                    <option value="hectare">Hectares</option>
+                </select>
+                <span>to</span>
+                <select id="areaTo">
+                    <option value="square-meter">Square Meters</option>
+                    <option value="square-kilometer">Square Kilometers</option>
+                    <option value="square-centimeter">Square Centimeters</option>
+                    <option value="square-foot">Square Feet</option>
+                    <option value="square-inch">Square Inches</option>
+                    <option value="square-yard">Square Yards</option>
+                    <option value="acre">Acres</option>
+                    <option value="hectare">Hectares</option>
+                </select>
+                <button onclick="convertArea()">Convert</button>
+                <button class="clear-btn" onclick="clearArea()">Clear</button>
+            </div>
+            <div id="areaError" class="error-message"></div>
+            <div id="areaResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functions
+        function showConverter(type) {
+            // Hide main view
+            document.getElementById("mainView").style.display = "none";
+            
+            // Hide all converters
+            document.getElementById("lengthConverter").style.display = "none";
+            document.getElementById("heightConverter").style.display = "none";
+            document.getElementById("temperatureConverter").style.display = "none";
+            document.getElementById("areaConverter").style.display = "none";
+            
+            // Show selected converter
+            document.getElementById(type + "Converter").style.display = "block";
+        }
+        
+        function goBack() {
+            // Hide all converters
+            document.getElementById("lengthConverter").style.display = "none";
+            document.getElementById("heightConverter").style.display = "none";
+            document.getElementById("temperatureConverter").style.display = "none";
+            document.getElementById("areaConverter").style.display = "none";
+            
+            // Show main view
+            document.getElementById("mainView").style.display = "block";
+            
+            // Clear all inputs and results when going back
+            clearAll();
+        }
+        
+        function clearAll() {
+            clearLength();
+            clearHeight();
+            clearTemperature();
+            clearArea();
+        }
+        
+        // Input validation functions
+        function validateInput(inputId, validationId) {
+            const input = document.getElementById(inputId);
+            const validation = document.getElementById(validationId);
+            const value = input.value;
+            
+            if (value === "") {
+                validation.innerHTML = "";
+                validation.className = "validation-message";
+                return false;
+            }
+            
+            if (isNaN(value)) {
+                validation.innerHTML = "⚠️ Please enter a valid number";
+                validation.className = "validation-message validation-error";
+                return false;
+            }
+            
+            if (parseFloat(value) < 0) {
+                validation.innerHTML = "⚠️ Please enter a positive number";
+                validation.className = "validation-message validation-error";
+                return false;
+            }
+            
+            if (value.length > 15) {
+                validation.innerHTML = "⚠️ Number too large (max 15 digits)";
+                validation.className = "validation-message validation-error";
+                return false;
+            }
+            
+            validation.innerHTML = "✅ Valid input";
+            validation.className = "validation-message validation-success";
+            return true;
+        }
+        
+        function validateTemperature(inputId, validationId) {
+            const input = document.getElementById(inputId);
+            const validation = document.getElementById(validationId);
+            const value = input.value;
+            const fromUnit = document.getElementById("tempFrom").value;
+            
+            if (value === "") {
+                validation.innerHTML = "";
+                validation.className = "validation-message";
+                return false;
+            }
+            
+            if (isNaN(value)) {
+                validation.innerHTML = "⚠️ Please enter a valid number";
+                validation.className = "validation-message validation-error";
+                return false;
+            }
+            
+            const numValue = parseFloat(value);
+            
+            // Check absolute zero limits
+            if (fromUnit === "celsius" && numValue < -273.15) {
+                validation.innerHTML = "⚠️ Temperature cannot be below -273.15°C (absolute zero)";
+                validation.className = "validation-message validation-error";
+                return false;
+            }
+            
+            if (fromUnit === "fahrenheit" && numValue < -459.67) {
+                validation.innerHTML = "⚠️ Temperature cannot be below -459.67°F (absolute zero)";
+                validation.className = "validation-message validation-error";
+                return false;
+            }
+            
+            if (fromUnit === "kelvin" && numValue < 0) {
+                validation.innerHTML = "⚠️ Temperature cannot be below 0K (absolute zero)";
+                validation.className = "validation-message validation-error";
+                return false;
+            }
+            
+            if (value.length > 10) {
+                validation.innerHTML = "⚠️ Number too large (max 10 digits)";
+                validation.className = "validation-message validation-error";
+                return false;
+            }
+            
+            validation.innerHTML = "✅ Valid temperature";
+            validation.className = "validation-message validation-success";
+            return true;
+        }
+        
+        function showError(errorId, message) {
+            const errorDiv = document.getElementById(errorId);
+            errorDiv.innerHTML = message;
+            errorDiv.style.display = "block";
+            setTimeout(() => {
+                errorDiv.style.display = "none";
+            }, 5000);
+        }
+        
+        // Length conversion factors to meters
+        const lengthFactors = {
+            meter: 1,
+            kilometer: 1000,
+            centimeter: 0.01,
+            millimeter: 0.001,
+            inch: 0.0254,
+            foot: 0.3048,
+            yard: 0.9144,
+            mile: 1609.344
+        };
+        
+        // Height conversion factors to meters
+        const heightFactors = {
+            meter: 1,
+            centimeter: 0.01,
+            foot: 0.3048,
+            inch: 0.0254
+        };
+        
+        // Area conversion factors to square meters
+        const areaFactors = {
+            'square-meter': 1,
+            'square-kilometer': 1000000,
+            'square-centimeter': 0.0001,
+            'square-foot': 0.092903,
+            'square-inch': 0.00064516,
+            'square-yard': 0.836127,
+            'acre': 4046.86,
+            'hectare': 10000
+        };
+        
+        function convertLength() {
+            const input = document.getElementById("lengthInput").value;
+            const fromUnit = document.getElementById("lengthFrom").value;
+            const toUnit = document.getElementById("lengthTo").value;
+            const resultDiv = document.getElementById("lengthResult");
+            
+            // Validate input
+            if (!validateInput('lengthInput', 'lengthValidation')) {
+                showError('lengthError', '❌ Please enter a valid positive number before converting.');
+                resultDiv.style.display = "none";
+                return;
+            }
+            
+            if (input === "" || isNaN(input)) {
+                showError('lengthError', '❌ Please enter a valid number!');
+                resultDiv.style.display = "none";
+                return;
+            }
+            
+            const inputValue = parseFloat(input);
+            
+            if (inputValue < 0) {
+                showError('lengthError', '❌ Length cannot be negative!');
+                resultDiv.style.display = "none";
+                return;
+            }
+            
+            if (fromUnit === toUnit) {
+                showError('lengthError', '⚠️ Source and target units are the same!');
+                resultDiv.style.display = "none";
+                return;
+            }
+            
+            try {
+                const meters = inputValue * lengthFactors[fromUnit];
+                const result = meters / lengthFactors[toUnit];
+                
+                if (!isFinite(result)) {
+                    throw new Error("Result is too large or invalid");
+                }
+                
+                resultDiv.innerHTML = `✅ ${inputValue} ${fromUnit} = ${result.toFixed(6)} ${toUnit}`;
+                resultDiv.style.display = "block";
+                resultDiv.style.background = "#e8f5e8";
+                resultDiv.style.color = "#2e7d32";
+                
+                // Hide any previous errors
+                document.getElementById('lengthError').style.display = "none";
+            } catch (error) {
+                showError('lengthError', '❌ Conversion error: Result is too large or invalid');
+                resultDiv.style.display = "none";
+            }
+        }
+        
+        function convertHeight() {
+            const input = document.getElementById("heightInput").value;
+            const fromUnit = document.getElementById("heightFrom").value;
+            const toUnit = document.getElementById("heightTo").value;
+            const resultDiv = document.getElementById("heightResult");
+            
+            // Validate input
+            if (!validateInput('heightInput', 'heightValidation')) {
+                showError('heightError', '❌ Please enter a valid positive number before converting.');
+                resultDiv.style.display = "none";
+                return;
+            }
+            
+            if (input === "" || isNaN(input)) {
+                showError('heightError', '❌ Please enter a valid number!');
+                resultDiv.style.display = "none";
+                return;
+            }
+            
+            const inputValue = parseFloat(input);
+            
+            if (inputValue < 0) {
+                showError('heightError', '❌ Height cannot be negative!');
+                resultDiv.style.display = "none";
+                return;
+            }
+            
+            if (fromUnit === toUnit) {
+                showError('heightError', '⚠️ Source and target units are the same!');
+                resultDiv.style.display = "none";
+                return;
+            }
+            
+            try {
+                let meters, result;
+                
+                if (fromUnit === "feet-inches") {
+                    meters = inputValue * heightFactors.foot;
+                } else {
+                    meters = inputValue * heightFactors[fromUnit];
+                }
+                
+                if (toUnit === "feet-inches") {
+                    const totalInches = meters / heightFactors.inch;
+                    const feet = Math.floor(totalInches / 12);
+                    const inches = totalInches % 12;
+                    result = `${feet}' ${inches.toFixed(2)}"`;
+                } else {
+                    result = (meters / heightFactors[toUnit]).toFixed(6);
+                }
+                
+                if (!isFinite(meters)) {
+                    throw new Error("Result is too large or invalid");
+                }
+                
+                resultDiv.innerHTML = `✅ ${inputValue} ${fromUnit} = ${result} ${toUnit === "feet-inches" ? "" : toUnit}`;
+                resultDiv.style.display = "block";
+                resultDiv.style.background = "#e8f5e8";
+                resultDiv.style.color = "#2e7d32";
+                
+                // Hide any previous errors
+                document.getElementById('heightError').style.display = "none";
+            } catch (error) {
+                showError('heightError', '❌ Conversion error: Result is too large or invalid');
+                resultDiv.style.display = "none";
+            }
+        }
+        
+        function convertTemperature() {
+            const input = document.getElementById("tempInput").value;
+            const fromUnit = document.getElementById("tempFrom").value;
+            const toUnit = document.getElementById("tempTo").value;
+            const resultDiv = document.getElementById("tempResult");
+            
+            if (input === "" || isNaN(input)) {
+                resultDiv.innerHTML = "Please enter a valid number!";
+                resultDiv.style.display = "block";
+                resultDiv.style.background = "#ffebee";
+                resultDiv.style.color = "#c62828";
+                return;
+            }
+            
+            const inputValue = parseFloat(input);
+            let celsius, result;
+            
+            // Convert to Celsius first
+            switch (fromUnit) {
+                case "celsius":
+                    celsius = inputValue;
+                    break;
+                case "fahrenheit":
+                    celsius = (inputValue - 32) * 5/9;
+                    break;
+                case "kelvin":
+                    celsius = inputValue - 273.15;
+                    break;
+            }
+            
+            // Convert from Celsius to target unit
+            switch (toUnit) {
+                case "celsius":
+                    result = celsius;
+                    break;
+                case "fahrenheit":
+                    result = (celsius * 9/5) + 32;
+                    break;
+                case "kelvin":
+                    result = celsius + 273.15;
+                    break;
+            }
+            
+            const fromSymbol = fromUnit === "celsius" ? "°C" : fromUnit === "fahrenheit" ? "°F" : "K";
+            const toSymbol = toUnit === "celsius" ? "°C" : toUnit === "fahrenheit" ? "°F" : "K";
+            
+            resultDiv.innerHTML = `${inputValue}${fromSymbol} = ${result.toFixed(2)}${toSymbol}`;
+            resultDiv.style.display = "block";
+            resultDiv.style.background = "#e8f5e8";
+            resultDiv.style.color = "#2e7d32";
+        }
+        
+        function convertArea() {
+            const input = document.getElementById("areaInput").value;
+            const fromUnit = document.getElementById("areaFrom").value;
+            const toUnit = document.getElementById("areaTo").value;
+            const resultDiv = document.getElementById("areaResult");
+            
+            if (input === "" || isNaN(input)) {
+                resultDiv.innerHTML = "Please enter a valid number!";
+                resultDiv.style.display = "block";
+                resultDiv.style.background = "#ffebee";
+                resultDiv.style.color = "#c62828";
+                return;
+            }
+            
+            const inputValue = parseFloat(input);
+            const squareMeters = inputValue * areaFactors[fromUnit];
+            const result = squareMeters / areaFactors[toUnit];
+            
+            resultDiv.innerHTML = `${inputValue} ${fromUnit.replace('-', ' ')} = ${result.toFixed(6)} ${toUnit.replace('-', ' ')}`;
+            resultDiv.style.display = "block";
+            resultDiv.style.background = "#e8f5e8";
+            resultDiv.style.color = "#2e7d32";
+        }
+        
+        function clearLength() {
+            document.getElementById("lengthInput").value = "";
+            document.getElementById("lengthResult").style.display = "none";
+        }
+        
+        function clearHeight() {
+            document.getElementById("heightInput").value = "";
+            document.getElementById("heightResult").style.display = "none";
+        }
+        
+        function clearTemperature() {
+            document.getElementById("tempInput").value = "";
+            document.getElementById("tempResult").style.display = "none";
+        }
+        
+        function clearArea() {
+            document.getElementById("areaInput").value = "";
+            document.getElementById("areaResult").style.display = "none";
+        }
+    </script>
+</body>
+</html>

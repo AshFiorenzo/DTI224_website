@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculate Change</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        label {
+            display: inline-block;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input[type="number"] {
+            padding: 8px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 120px;
+            margin-right: 10px;
+        }
+        
+        input[type="number"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        
+        input[type="number"].invalid {
+            border-color: #dc3545;
+        }
+        
+        button {
+            padding: 8px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .back-btn {
+            background-color: #6c757d;
+        }
+        
+        .back-btn:hover {
+            background-color: #545b62;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .results {
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            margin: 8px 0;
+            padding: 5px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .result-item.empty {
+            color: #888;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+        }
+        
+        .validation-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculate Change</h1>
+        
+        <div class="input-section">
+            <label for="amount">Enter Amount:</label>
+            <input type="number" id="amount" placeholder="874" min="0" step="0.01" max="999999">
+            <div class="button-group">
+                <button onclick="calculateChange()">Submit</button>
+                <button class="back-btn" onclick="resetForm()" id="backBtn" style="display: none;">Back</button>
+            </div>
+            <div id="validationMessage" class="validation-message"></div>
+        </div>
+        
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        function validateInput(amount) {
+            const validationDiv = document.getElementById('validationMessage');
+            const amountInput = document.getElementById('amount');
+            
+            // Clear previous validation styles
+            amountInput.classList.remove('invalid');
+            validationDiv.innerHTML = '';
+            
+            // Check if input is empty
+            if (!amount && amount !== 0) {
+                validationDiv.innerHTML = 'Please enter an amount.';
+                amountInput.classList.add('invalid');
+                return false;
+            }
+            
+            // Check if input is a valid number
+            if (isNaN(amount)) {
+                validationDiv.innerHTML = 'Please enter a valid number.';
+                amountInput.classList.add('invalid');
+                return false;
+            }
+            
+            // Check if amount is negative
+            if (amount < 0) {
+                validationDiv.innerHTML = 'Amount cannot be negative.';
+                amountInput.classList.add('invalid');
+                return false;
+            }
+            
+            // Check if amount is too large (optional - set reasonable limit)
+            if (amount > 999999) {
+                validationDiv.innerHTML = 'Amount is too large. Please enter a value less than 1,000,000.';
+                amountInput.classList.add('invalid');
+                return false;
+            }
+            
+            // Check for too many decimal places
+            if (amount.toString().includes('.')) {
+                const decimalPlaces = amount.toString().split('.')[1].length;
+                if (decimalPlaces > 2) {
+                    validationDiv.innerHTML = 'Please enter amount with maximum 2 decimal places.';
+                    amountInput.classList.add('invalid');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        function calculateChange() {
+            const amountInput = document.getElementById('amount');
+            const resultsDiv = document.getElementById('results');
+            const backBtn = document.getElementById('backBtn');
+            
+            // Get the input value
+            let amount = parseFloat(amountInput.value);
+            
+            // Validate input
+            if (!validateInput(amount)) {
+                return;
+            }
+            
+            // Show success message for zero amount
+            if (amount === 0) {
+                resultsDiv.innerHTML = '<div class="success">No change needed for ৳0.</div>';
+                backBtn.style.display = 'inline-block';
+                return;
+            }
+            
+            // Convert to cents to avoid floating point issues
+            let cents = Math.round(amount * 100);
+            
+            const denominations = [
+                { value: 50000, label: 'B500' },  
+                { value: 10000, label: 'B100' },  
+                { value: 5000, label: 'B50' },    
+                { value: 2000, label: 'B20' },  
+                { value: 1000, label: 'B10' },   
+                { value: 500, label: 'B5' },    
+                { value: 200, label: 'B2' },    
+                { value: 100, label: 'B1' }     
+            ];
+            
+            let results = [];
+            
+            // Calculate change for each denomination
+            for (let i = 0; i < denominations.length; i++) {
+                const count = Math.floor(cents / denominations[i].value);
+                if (count > 0) {
+                    results.push({
+                        count: count,
+                        label: denominations[i].label
+                    });
+                    cents -= count * denominations[i].value;
+                }
+            }
+            
+            // Display results
+            let html = '<div class="success">Change calculated successfully!</div>';
+            if (results.length === 0) {
+                html += '<div class="result-item empty">No change needed</div>';
+            } else {
+                results.forEach(result => {
+                    html += `<div class="result-item">${result.count} of ${result.label}</div>`;
+                });
+                
+                // If there's remaining cents (less than 1 taka), show it
+                if (cents > 0) {
+                    html += `<div class="result-item">${cents} paisa remaining</div>`;
+                }
+            }
+            
+            resultsDiv.innerHTML = html;
+            backBtn.style.display = 'inline-block';
+        }
+        
+        function resetForm() {
+            const amountInput = document.getElementById('amount');
+            const resultsDiv = document.getElementById('results');
+            const backBtn = document.getElementById('backBtn');
+            const validationDiv = document.getElementById('validationMessage');
+            
+            // Reset form
+            amountInput.value = '';
+            amountInput.placeholder = '874';
+            amountInput.classList.remove('invalid');
+            resultsDiv.innerHTML = '';
+            validationDiv.innerHTML = '';
+            backBtn.style.display = 'none';
+            
+            // Focus back to input
+            amountInput.focus();
+        }
+        
+        // Real-time validation as user types
+        document.getElementById('amount').addEventListener('input', function(e) {
+            const amount = parseFloat(e.target.value);
+            if (e.target.value && !isNaN(amount)) {
+                validateInput(amount);
+            } else if (e.target.value) {
+                // Show validation for invalid input as user types
+                validateInput(e.target.value);
+            } else {
+                // Clear validation when input is empty
+                document.getElementById('validationMessage').innerHTML = '';
+                e.target.classList.remove('invalid');
+            }
+        });
+        
+        // Allow Enter key to submit
+        document.getElementById('amount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateChange();
+            }
+        });
+        
+        // Set default value
+        document.getElementById('amount').value = '874';
+    </script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance to Kasem Bundit University</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .university-info {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+        }
+
+        .university-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.4em;
+        }
+
+        .university-info p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        button {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(79, 172, 254, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: linear-gradient(45deg, #ccc 0%, #999 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: 600;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .result.success {
+            background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(86, 171, 47, 0.3);
+        }
+
+        .result.error {
+            background: linear-gradient(45deg, #ff6b6b 0%, #ffa8a8 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .result.loading {
+            background: linear-gradient(45deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+            box-shadow: 0 8px 20px rgba(252, 182, 159, 0.3);
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .coordinates {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📍 Distance Calculator</h1>
+        
+        <div class="university-info">
+            <h2>🏛️ Kasem Bundit University Romklao Campus</h2>
+        </div>
+
+        <button id="locationBtn" onclick="getLocation()">
+            Where am I?
+        </button>
+
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Kasem Bundit University Romklao coordinates 
+        const universityLat = 13.80265;
+        const universityLng = 100.73699;
+
+        function getLocation() {
+            const btn = document.getElementById('locationBtn');
+            const result = document.getElementById('result');
+
+            if (!navigator.geolocation) {
+                showResult('Geolocation is not supported by this browser.', 'error');
+                return;
+            }
+
+            // Show loading state
+            btn.disabled = true;
+            btn.textContent = 'Getting location...';
+            showResult('<div class="loading-spinner"></div>Locating you...', 'loading');
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+
+                    // Calculate distance using Haversine formula
+                    const distance = calculateDistance(userLat, userLng, universityLat, universityLng);
+
+                    // Show result
+                    const message = `You're ${distance.toFixed(2)} km away from Kasem Bundit University`;
+                    //const coordinates = `<div class="coordinates">Your coordinates: ${userLat.toFixed(6)}, ${userLng.toFixed(6)} (±${Math.round(accuracy)}m)</div>`;
+                    showResult(message , 'success');
+
+                    // Reset button
+                    btn.disabled = false;
+                    btn.textContent = 'Where am I?';
+                },
+                function(error) {
+                    let errorMessage = '';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = '❌ Location access denied. Please enable location permissions.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = '❌ Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = '⏰ Location request timed out. Please try again.';
+                            break;
+                        default:
+                            errorMessage = '❌ An unknown error occurred while getting your location.';
+                            break;
+                    }
+                    showResult(errorMessage, 'error');
+
+                    // Reset button
+                    btn.disabled = false;
+                    btn.textContent = 'Where am I?';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 60000
+                }
+            );
+        }
+
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // Radius of the Earth in kilometers
+            const dLat = toRadians(lat2 - lat1);
+            const dLng = toRadians(lng2 - lng1);
+            
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                     Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+                     Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+            
+            return distance;
+        }
+
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.innerHTML = message;
+            result.className = `result ${type}`;
+            result.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
